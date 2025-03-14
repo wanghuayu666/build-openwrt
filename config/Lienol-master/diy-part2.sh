@@ -30,14 +30,9 @@ echo 'src-git passwall_packages https://github.com/xiaorouji/openwrt-passwall-pa
 # 下载 PassWall 依赖
 ./scripts/feeds install -a -p passwall_packages
 
-# 下载 OpenClash 核心
-mkdir -p /etc/openclash/core && cd /etc/openclash/core
-wget -O clash.gz https://github.com/vernesong/OpenClash/releases/download/Clash/clash-linux-amd64.tar.gz
-tar -xzvf clash.gz && chmod +x clash
-cd -
 
-# 清理旧编译缓存（可选）
-make clean
+
+
 
 
 
