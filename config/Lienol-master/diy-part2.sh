@@ -1,24 +1,47 @@
 #!/bin/bash
 #========================================================================================================================
-# https://github.com/ophub/amlogic-s9xxx-openwrt
-# Description: Automatically Build OpenWrt
-# Function: Diy script (After Update feeds, Modify the default IP, hostname, theme, add/remove software packages, etc.)
-# Source code repository: https://github.com/openwrt/openwrt / Branch: main
+# OpenWrt 自动编译脚本
 #========================================================================================================================
 
-# ------------------------------- Main source started -------------------------------
-#
-# Add the default password for the 'root' user（Change the empty password to 'password'）
+# 设置 root 默认密码（改为空）
 sed -i 's/root:::0:99999:7:::/root:$1$V4UetPzk$CYXluq4wUazHjmCDBCqXF.::0:99999:7:::/g' package/base-files/files/etc/shadow
 
-# Set etc/openwrt_release
+# 设置 OpenWrt 版本号
 sed -i "s|DISTRIB_REVISION='.*'|DISTRIB_REVISION='R$(date +%Y.%m.%d)'|g" package/base-files/files/etc/openwrt_release
 echo "DISTRIB_SOURCECODE='Lienol'" >>package/base-files/files/etc/openwrt_release
 
-# Modify default IP（FROM 192.168.99.1 CHANGE TO 192.168.31.4）
+# 修改默认 IP 地址
 sed -i 's/192.168.[0-9]\{1,3\}.[0-9]\{1,3\}/192.168.99.1/g' package/base-files/files/bin/config_generate
-#
-# ------------------------------- Main source ends -------------------------------
+
+# 添加常用 feed 源
+echo 'src-git argon https://github.com/jerrykuku/luci-theme-argon' >>feeds.conf.default
+echo 'src-git argon-config https://github.com/jerrykuku/luci-app-argon-config' >>feeds.conf.default
+echo 'src-git openclash https://github.com/vernesong/OpenClash' >>feeds.conf.default
+echo 'src-git passwall https://github.com/xiaorouji/openwrt-passwall' >>feeds.conf.default
+echo 'src-git passwall_packages https://github.com/xiaorouji/openwrt-passwall-packages' >>feeds.conf.default
+
+# 更新 feeds 并安装
+./scripts/feeds update -a
+./scripts/feeds install -a
+
+# 安装 luci-i18n-base-zh-cn（Luci 中文语言包）
+./scripts/feeds install luci-i18n-base-zh-cn
+
+# 下载 PassWall 依赖
+./scripts/feeds install -a -p passwall_packages
+
+# 下载 OpenClash 核心
+mkdir -p /etc/openclash/core && cd /etc/openclash/core
+wget -O clash.gz https://github.com/vernesong/OpenClash/releases/download/Clash/clash-linux-amd64.tar.gz
+tar -xzvf clash.gz && chmod +x clash
+cd -
+
+# 清理旧编译缓存（可选）
+make clean
+
+
+
+
 
 # ------------------------------- Other started -------------------------------
 #
@@ -28,9 +51,9 @@ sed -i 's/192.168.[0-9]\{1,3\}.[0-9]\{1,3\}/192.168.99.1/g' package/base-files/f
 # svn co https://github.com/Lienol/openwrt-packages/trunk/utils/{containerd,libnetwork,runc,tini} feeds/packages/utils
 
 # Add third-party software packages (The entire repository)
-# git clone https://github.com/libremesh/lime-packages.git package/lime-packages
+# git clone https://dl.openwrt.ai/packages-24.10/x86_64/kiddin9/
 # Add third-party software packages (Specify the package)
-# svn co https://github.com/libremesh/lime-packages/trunk/packages/{shared-state-pirania,pirania-app,pirania} package/lime-packages/packages
+# svn co https://dl.openwrt.ai/packages-24.10/x86_64/kiddin9/
 # Add to compile options (Add related dependencies according to the requirements of the third-party software package Makefile)
 # sed -i "/DEFAULT_PACKAGES/ s/$/ pirania-app pirania ip6tables-mod-nat ipset shared-state-pirania uhttpd-mod-lua/" target/linux/armvirt/Makefile
 
