@@ -16,13 +16,6 @@ sed -i 's/192.168.[0-9]\{1,3\}.[0-9]\{1,3\}/192.168.99.1/g' package/base-files/f
 # 添加常用 feed 源
 echo 'src-git argon https://github.com/jerrykuku/luci-theme-argon' >>feeds.conf.default
 echo 'src-git argon-config https://github.com/jerrykuku/luci-app-argon-config' >>feeds.conf.default
-echo 'src-git openclash https://github.com/vernesong/OpenClash' >>feeds.conf.default
-echo 'src-git passwall https://github.com/xiaorouji/openwrt-passwall' >>feeds.conf.default
-echo 'src-git passwall_packages https://github.com/xiaorouji/openwrt-passwall-packages' >>feeds.conf.default
-
-# 更新 feeds 并安装
-./scripts/feeds update -a
-./scripts/feeds install -a
 
 # 安装 luci-i18n-base-zh-cn（Luci 中文语言包）
 ./scripts/feeds install luci-i18n-base-zh-cn
