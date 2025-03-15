@@ -11,7 +11,7 @@ sed -i "s|DISTRIB_REVISION='.*'|DISTRIB_REVISION='R$(date +%Y.%m.%d)'|g" package
 echo "DISTRIB_SOURCECODE='Lienol'" >>package/base-files/files/etc/openwrt_release
 
 # 修改默认 IP 地址
-sed -i 's/192.168.[0-9]\{1,3\}.[0-9]\{1,3\}/192.168.99.1/g' package/base-files/files/bin/config_generate
+sed -i 's/192.168.[0-9]\{1,3\}.[0-9]\{1,3\}/192.168.88.1/g' package/base-files/files/bin/config_generate
 
 # 添加常用 feed 源
 echo 'src-git argon https://github.com/jerrykuku/luci-theme-argon' >>feeds.conf.default
